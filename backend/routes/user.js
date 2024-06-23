@@ -47,7 +47,7 @@ router.post("/signup", async (req, res) => {
 
     const token = jwt.sign({
         userId
-    }, JWT_SECRET);
+    }, process.env.JWT_SECRET);
     
 
     res.json({
@@ -83,7 +83,7 @@ router.post("/signin", async (req, res) => {
     if (user) {
         const token = jwt.sign({
             userId: user._id
-        }, JWT_SECRET);
+        }, process.env.JWT_SECRET);
   
         res.json({
             token: token
@@ -112,10 +112,10 @@ router.put("/",authMiddleware,async (req,res)=>{
     })
 })
 
-router.get("/bulk", async (req,re)=>{
+router.get("/bulk", async (req,res)=>{
     const filter= req.query.filter || "";
 
-    const users= await User.findOne({
+    const users= await User.find({
         $or:[{
             firstName:{
                 "$regex":filter
@@ -126,12 +126,13 @@ router.get("/bulk", async (req,re)=>{
             }
         }]
     }) 
+    console.log(users)
     res.json({
-        user:users.map(user=>({
-            username:user.username,
-            firstName:user.firstName,
-            lastName:user.lastName,
-            _id:user._id
+        user: users.map(user => ({
+            username: user.username,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            _id: user._id
         }))
     })
 })
